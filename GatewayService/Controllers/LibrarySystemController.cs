@@ -181,7 +181,7 @@ namespace GatewayService.Controllers
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     PropertyNameCaseInsensitive = true
                 };
-
+                Console.WriteLine("GOT HERE");
                 var reservations = JsonSerializer.Deserialize<List<Reservation>>(content, options);
 
                 var result = new List<BookReservationResponse>();
@@ -306,7 +306,7 @@ namespace GatewayService.Controllers
                 request = new HttpRequestMessage(HttpMethod.Get, url);
                 response = await _httpClient.SendAsync(request);
                 content = await response.Content.ReadAsStringAsync();
-                var changeCountResponse = JsonSerializer.Deserialize<int>(content, options);
+               // var changeCountResponse = JsonSerializer.Deserialize<int>(content, options);
 
                 //////////////////////////////////////////////
                 var bookId = takeBookRequest.BookUid;
@@ -349,7 +349,7 @@ namespace GatewayService.Controllers
         }
 
         [HttpPost("reservations/{reservationUid}/return")]
-        public async Task<ActionResult> ReturnBook([FromBody] ReturnBookRequest returnBookRequest)
+        public async Task<ActionResult> ReturnBook([FromBody] ReturnBookRequest returnBookRequest, [FromRoute] Guid reservationUid)
         {
             try
             {
@@ -365,7 +365,7 @@ namespace GatewayService.Controllers
                     PropertyNameCaseInsensitive = true
                 };
 
-                var url = "http://reservation:8080/Reservation/CloseReservation";
+                var url = $"http://reservation:8080/Reservation/CloseReservation?resId={reservationUid.ToString()}";
                 var json = JsonSerializer.Serialize(returnBookRequest);
                 var reqContent = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -377,7 +377,7 @@ namespace GatewayService.Controllers
 
                 if (!respContent.IsSuccessStatusCode)
                 {
-                    return StatusCode((int)respContent.StatusCode, "Бронирование не найдено");
+                    return StatusCode((int)respContent.StatusCode, await respContent.Content.ReadAsStringAsync());
                 }
                 var responseContent = await respContent.Content.ReadAsStringAsync();
                 var reservationResponse = JsonSerializer.Deserialize<Reservation>(responseContent, options);
