@@ -6,6 +6,7 @@ services:
     restart: on-failure
     environment:
       POSTGRES_USER: postgres
+      PGUSER: postgres
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_DB: postgres
     volumes:
@@ -14,7 +15,53 @@ services:
     ports:
       - "5432:5432"
 
-# TODO добавить сервисы
+  reservation:
+    build:
+      context: ./ReservationService
+      dockerfile: Dockerfile
+    ports:
+      - "8070:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=postgres;Username=postgres;Password=postgres;
+    depends_on:
+      - postgres
+  library:
+    build:
+      context: ./LibraryService
+      dockerfile: Dockerfile
+    ports:
+      - "8060:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Username=postgres;Password=postgres;Database=postgres;
+    depends_on:
+      - postgres
+  rating:
+    build:
+      context: ./RatingService
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=postgres;Username=postgres;Password=postgres;
+    depends_on:
+      - postgres
+  gateway:
+    build:
+      context: ./GatewayService
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiUrl=http://reservation:80  
+    depends_on:
+      - reservation  
+      - rating
+      - library
+
 
 volumes:
   db-data:
