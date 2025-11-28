@@ -399,7 +399,11 @@ namespace GatewayService.Controllers
                 ////
                 ///
                 var deltaRating = 0;
-                if(reservationResponse.Status == "EXPIRED") 
+                if (reservationResponse.Status == "RETURNED" && returnBookRequest.Condition == book.Condition)
+                {
+                    deltaRating += 1;
+                }
+                if (reservationResponse.Status == "EXPIRED") 
                 {
                     deltaRating -= 10;
                 }
@@ -412,10 +416,13 @@ namespace GatewayService.Controllers
                     var content = await response.Content.ReadAsStringAsync();
                     var changeConditionresponse = JsonSerializer.Deserialize<string>(content, options);
                 }
-                if(reservationResponse.Status == "RETURNED" && returnBookRequest.Condition == book.Condition)
-                {
-                    deltaRating += 1;
-                }
+
+                url = $"http://rating:8080/Rating/changeRating?delta={deltaRating}";
+                var re = new HttpRequestMessage(HttpMethod.Post, url);
+                re.Headers.Add("X-User-Name", username.ToString());
+                var rrp = await _httpClient.SendAsync(re);
+                //var content = await response.Content.ReadAsStringAsync();
+
 
                 return StatusCode(204, "Книга успешно возвращена");
 
