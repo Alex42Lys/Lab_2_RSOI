@@ -56,15 +56,16 @@ jobs:
 
       - name: Get Gateway logs
         if: always()  
-        run: docker-compose logs gateway
+        run: docker compose logs gateway
 
       - name: Get Library logs  
         if: always()
-        run: docker-compose logs library
+        run: docker compose logs library
 
       - name: Get all services logs
         if: always()
-        run: docker-compose logs
+        run: docker compose logs
+
       - name: Stop containers
         if: always()
         continue-on-error: true
