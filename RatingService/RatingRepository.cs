@@ -10,11 +10,7 @@ namespace RatingService
             var userRating = await _context.Ratings.Where(x => x.Username == userName).FirstOrDefaultAsync();
             return userRating;
         }
-        public async Task<Rating> ChangeUserRating(string userName)
-        {
-            var userRating = await _context.Ratings.Where(x => x.Username == userName).FirstOrDefaultAsync();
-            return userRating;
-        }
+
         public async Task ChangeUserRating(string userName, int delta)
         {
             var rating = await _context.Ratings
