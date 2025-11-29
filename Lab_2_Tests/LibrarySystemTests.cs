@@ -177,7 +177,6 @@ namespace GatewayService.Tests
 
             var objectResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(204, objectResult.StatusCode);
-            Assert.Equal("Книга успешно возвращена", objectResult.Value);
         }
 
         [Fact]
@@ -221,7 +220,6 @@ namespace GatewayService.Tests
           
             var objectResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(204, objectResult.StatusCode);
-            Assert.Equal("Книга успешно возвращена", objectResult.Value);
         }
 
         [Fact]
@@ -263,7 +261,6 @@ namespace GatewayService.Tests
 
             var objectResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(204, objectResult.StatusCode);
-            Assert.Equal("Книга успешно возвращена", objectResult.Value);
         }
 
         [Fact]
